@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+target="${1:-}"
+case "$target" in
+  1.21.11) java_version=21 ;;
+  26.1.2|26.2) java_version=25 ;;
+  all)
+    shift
+    for version in 1.21.11 26.1.2 26.2; do "$ROOT/dev" "$version" "${@:-build}"; done
+    exit 0 ;;
+  *) echo 'Usage: ./dev <1.21.11|26.1.2|26.2|all> [Gradle tasks/options; default: build]' >&2; exit 2 ;;
+esac
+shift
+if [[ "$java_version" == 21 && -n "${JAVA21_HOME:-}" ]]; then
+  export JAVA_HOME="$JAVA21_HOME"
+elif [[ "$java_version" == 25 && -n "${JAVA25_HOME:-}" ]]; then
+  export JAVA_HOME="$JAVA25_HOME"
+elif [[ "$java_version" == 25 && -d "$ROOT/.dev/jdks/jdk-25.0.4.1+1/Contents/Home" ]]; then
+  export JAVA_HOME="$ROOT/.dev/jdks/jdk-25.0.4.1+1/Contents/Home"
+elif [[ -x /usr/libexec/java_home ]]; then
+  selected_java_home="$(/usr/libexec/java_home -F -v "$java_version")"
+  export JAVA_HOME="$selected_java_home"
+else
+  echo "Set JAVA${java_version}_HOME to a JDK ${java_version} installation." >&2
+  exit 1
+fi
+export GRADLE_USER_HOME="${GRADLE_USER_HOME:-$ROOT/.dev/gradle-home}"
+exec "$ROOT/versions/$target/gradlew" -p "$ROOT/versions/$target" "${@:-build}"

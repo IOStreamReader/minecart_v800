@@ -1,0 +1,11 @@
+.dev/
+.gradle/
+**/build/
+**/run/
+**/run-data/
+**/logs/
+**/repo/
+.idea/
+*.iml
+.DS_Store
+local.properties

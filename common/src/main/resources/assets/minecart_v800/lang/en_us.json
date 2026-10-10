@@ -1,0 +1,5 @@
+{
+  "item.minecart_v800.brake_broken_minecart": "Brake Broken Minecart",
+  "death.attack.minecart_v800.brake_failure": "%s died in car accident",
+  "death.attack.minecart_v800.brake_failure.player": "%s died in car accident"
+}
